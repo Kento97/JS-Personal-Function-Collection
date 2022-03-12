@@ -21,3 +21,22 @@ const filterRemoveDuplicates = (arr) => {
 const es6RemoveDuplicates = (arr) => {
     return [...new Set(arr)];
 };
+
+//reduce 去重
+function arrayDeduplication(array) {
+    try {
+        array.forEach((ele) => {
+            if (typeof ele !== "string" && typeof ele !== "number") {
+                throw "警告：数组元素必须是字符串或者数字";
+            }
+        });
+        return array.reduce((prev, curr) => {
+            if (prev.indexOf(curr) === -1) {
+                prev.push(curr);
+            }
+            return prev;
+        }, []);
+    } catch (error) {
+        console.log(error);
+    }
+}
