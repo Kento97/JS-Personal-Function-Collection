@@ -7,7 +7,9 @@ const obj = {
     },
     d: {
         f: {
-            g: [1, 2, 3]
+            g: () => {
+
+            }
         }
     }
 }
@@ -27,7 +29,9 @@ function deepClone(targetData){
     } else if (type==="Object"){
         result={};
         for (let key in targetData) {
-            result[key]=deepClone(targetData[key]);
+            if (targetData.hasOwnProperty(key)) {
+                result[key]=deepClone(targetData[key]);
+            }
         }
     }else {
         return targetData;
