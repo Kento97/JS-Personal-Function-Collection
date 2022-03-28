@@ -1,50 +1,47 @@
-const obj = {
-    a: 1,
-    b: NaN,
-    c: {
-        d: [1, 2, 3],
-        e: undefined
-    },
-    d: {
-        f: {
-            g: () => {
+const isObj = (val) => typeof val === "object" && val !== null;
 
-            }
-        }
+// 写法1
+function deepClone(obj) {
+    // 通过 instanceof 去判断你要拷贝的变量它是否是数组（如果不是数组则对象）。
+
+    // 1. 准备你想返回的变量（新地址）。
+    const newObj = obj instanceof Array ? [] : {}; // 核心代码。
+
+    // 2. 做拷贝；简单数据类型只需要赋值，如果遇到复杂数据类型就再次进入进行深拷贝，直到所找到的数据为简单数据类型为止。
+    for (const key in obj) {
+        const item = obj[key];
+        newObj[key] = isObj(item) ? deepClone(item) : item;
     }
-}
-const {log} = console
 
-function checkType(target) {
-    return Object.prototype.toString.call(target).slice(8, -1);
+    // 3. 返回拷贝的变量。
+    return newObj;
 }
 
-function deepClone(data) {
-    const obj = checkType(data) === "Array" ? [] : {};
-    if (['Object', 'Array'].includes(checkType(data))) {
-        for (let key in data) {
-            const value = data[key];
-            //如果拷贝的是简单类型直接进行赋值
-            if (!['Object', 'Array'].includes(checkType(value))) {
-                obj[key] = value;
-            } else {
-                //定义一个弱映射，初始化的时候将data本身加入到映射中
-                const wm = new WeakMap();
-                //如果拷贝的是复杂数据类型，第一次拷贝后存入 WeakMap
-                //第二次再次遇到该值时直接赋值为null，结束递柜
-                wm.set(data, true);
-                if (wm.has(value)) {
-                    obj[key] = null
-                } else {
-                    wm.set(value, true)
-                    obj[key] = deepClone(value);
-                }
-            }
+
+
+
+// 写法2 利用es6新特性 WeakMap弱引用 性能更好 并且支持 Symbol
+function deepClone2(obj, wMap = new WeakMap()) {
+    if (isObj(obj)) {
+        // 判断是对象还是数组
+        let target = Array.isArray(obj) ? [] : {};
+
+        // 如果存在这个就直接返回
+        if (wMap.has(obj)) {
+            return wMap.get(obj);
         }
+
+        wMap.set(obj, target);
+
+        // 遍历对象
+        Reflect.ownKeys(obj).forEach((item) => {
+            // 拿到数据后判断是复杂数据还是简单数据 如果是复杂数据类型就继续递归调用
+            target[item] = isObj(obj[item]) ? deepClone2(obj[item], wMap) : obj[item];
+        });
+
+        return target;
     } else {
-        return data;
+        return obj;
     }
-    return obj
 }
 
-log(deepClone(obj));
