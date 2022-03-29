@@ -1,8 +1,18 @@
-function myNew(fn, ...args) {
-  // 基于原型链 创建一个新对象
-  let newObj = Object.create(fn.prototype)
-  // 添加属性到新对象上 并获取obj函数的结果
-  let res = fn.call(newObj, ...args);
-  // 如果执行结果有返回值并且是一个对象, 返回执行的结果, 否则, 返回新创建的对象
-  return res && typeof res === 'object' ? res : newObj;
+function myNew(func, ...args) {
+  let obj = {}
+  obj.__proto__ = func.prototype
+  let res = func.apply(obj, args)
+  return res instanceof Object ? res : obj
 }
+
+function Foo(num) {
+  this.number = num
+}
+
+let foo1 = myNew(Foo, 1)
+console.log(foo1 instanceof Foo)  // true
+console.log(foo1.number)  // 1
+
+let foo2 = new Foo(2)
+console.log(foo2 instanceof Foo)  // true
+console.log(foo2.number)  // 2
