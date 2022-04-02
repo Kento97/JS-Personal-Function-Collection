@@ -8,10 +8,12 @@ const result = {
 const objToArr = (data, realName, realValue) => {
     const res = [];
     for (let key in data) {
-        res.push({
-            [realName]: key,
-            [realValue]: data[key]
-        })
+        if (data.hasOwnProperty(key)) {
+            res.push({
+                [realName]: key,
+                [realValue]: data[key]
+            })
+        }
     }
     return res;
 }
