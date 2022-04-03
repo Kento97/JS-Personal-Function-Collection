@@ -8,7 +8,7 @@ const result = {
 const objToArr = (data, realName, realValue) => {
     const res = [];
     for (let key in data) {
-        if (data.hasOwnProperty(key)) {
+        if (Reflect.ownKeys(data).includes(key)) {
             res.push({
                 [realName]: key,
                 [realValue]: data[key]
